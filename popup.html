@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iqra — AI Page Summarizer</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <!-- ── Animated Starry Night Background ── -->
+    <div class="bg-canvas" aria-hidden="true">
+      <svg
+        class="bg-swirls"
+        viewBox="0 0 340 260"
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M-20,45 Q60,16 132,50 Q204,84 274,38 Q312,16 370,44"
+          fill="none"
+          stroke="#FFF8E7"
+          stroke-width="8"
+          opacity="0.038"
+        />
+        <path
+          d="M-20,82 Q72,57 148,84 Q228,113 308,70"
+          fill="none"
+          stroke="#4a7acc"
+          stroke-width="13"
+          opacity="0.048"
+        />
+        <path
+          d="M-20,118 Q82,98 160,120 Q240,144 320,102"
+          fill="none"
+          stroke="#FFF8E7"
+          stroke-width="6"
+          opacity="0.032"
+        />
+        <path
+          d="M-20,154 Q90,136 165,157 Q244,180 322,140"
+          fill="none"
+          stroke="#3a6ac0"
+          stroke-width="11"
+          opacity="0.038"
+        />
+        <path
+          d="M-20,190 Q78,174 155,193 Q232,214 312,177"
+          fill="none"
+          stroke="#FFF8E7"
+          stroke-width="4"
+          opacity="0.025"
+        />
+        <path
+          d="M-20,226 Q88,212 162,228 Q240,246 318,212"
+          fill="none"
+          stroke="#5580cc"
+          stroke-width="9"
+          opacity="0.030"
+        />
+      </svg>
+      <svg
+        class="bg-stars"
+        viewBox="0 0 340 600"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <!-- Moon halo -->
+        <circle cx="294" cy="40" r="18" fill="#E8C14A" opacity="0.10" />
+        <circle
+          cx="294"
+          cy="40"
+          r="28"
+          fill="none"
+          stroke="#E8C14A"
+          stroke-width="1.4"
+          opacity="0.07"
+        />
+        <circle
+          cx="294"
+          cy="40"
+          r="40"
+          fill="none"
+          stroke="#E8C14A"
+          stroke-width="0.7"
+          opacity="0.04"
+        />
+        <!-- Twinkling stars — animated via CSS -->
+        <circle
+          class="tw"
+          cx="52"
+          cy="22"
+          r="2"
+          fill="#FFF8E7"
+          style="--delay: 0s; --dur: 2.8s"
+        />
+        <circle
+          class="tw"
+          cx="180"
+          cy="11"
+          r="1.5"
+          fill="#FFF8E7"
+          style="--delay: 1.1s; --dur: 3.5s"
+        />
+        <circle
+          class="tw"
+          cx="235"
+          cy="30"
+          r="2"
+          fill="#FFF8E7"
+          style="--delay: 0.5s; --dur: 2.2s"
+        />
+        <circle
+          class="tw"
+          cx="100"
+          cy="36"
+          r="1.2"
+          fill="#FFF8E7"
+          style="--delay: 1.8s; --dur: 4s"
+        />
+        <circle
+          class="tw"
+          cx="155"
+          cy="15"
+          r="1"
+          fill="#E8C14A"
+          style="--delay: 0.3s; --dur: 3.1s"
+        />
+        <circle
+          class="tw"
+          cx="32"
+          cy="57"
+          r="1.5"
+          fill="#FFF8E7"
+          style="--delay: 2.2s; --dur: 2.6s"
+        />
+        <circle
+          class="tw"
+          cx="312"
+          cy="72"
+          r="1"
+          fill="#FFF8E7"
+          style="--delay: 0.9s; --dur: 3.8s"
+        />
+        <circle
+          class="tw"
+          cx="70"
+          cy="124"
+          r="1.2"
+          fill="#FFF8E7"
+          style="--delay: 1.4s; --dur: 2.4s"
+        />
+        <circle
+          class="tw"
+          cx="288"
+          cy="160"
+          r="1"
+          fill="#E8C14A"
+          style="--delay: 0.7s; --dur: 3.2s"
+        />
+        <circle
+          class="tw"
+          cx="22"
+          cy="200"
+          r="1.5"
+          fill="#FFF8E7"
+          style="--delay: 2.8s; --dur: 2.9s"
+        />
+        <circle
+          class="tw"
+          cx="315"
+          cy="240"
+          r="1"
+          fill="#FFF8E7"
+          style="--delay: 0.2s; --dur: 3.6s"
+        />
+        <circle
+          class="tw"
+          cx="130"
+          cy="280"
+          r="1.2"
+          fill="#E8C14A"
+          style="--delay: 1.6s; --dur: 2.7s"
+        />
+      </svg>
+    </div>
+
+    <!-- ── Islamic Geometric Top Border ── -->
+    <div class="geo-border" aria-hidden="true">
+      <svg
+        viewBox="0 0 340 20"
+        xmlns="http://www.w3.org/2000/svg"
+        width="340"
+        height="20"
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <pattern
+            id="geoPat"
+            x="0"
+            y="0"
+            width="34"
+            height="20"
+            patternUnits="userSpaceOnUse"
+          >
+            <polygon
+              points="17,1.5 32.5,10 17,18.5 1.5,10"
+              fill="none"
+              stroke="#E8C14A"
+              stroke-width="0.7"
+              opacity="0.28"
+            />
+            <polygon
+              points="17,5 29,10 17,15 5,10"
+              fill="none"
+              stroke="#E8C14A"
+              stroke-width="0.3"
+              opacity="0.15"
+            />
+          </pattern>
+        </defs>
+        <rect width="340" height="20" fill="url(#geoPat)" />
+      </svg>
+    </div>
+
+    <!-- ── Header ── -->
+    <header class="p-header">
+      <div class="p-top-row">
+        <span class="p-badge">✦ Page Summarizer</span>
+        <button
+          class="p-settings-btn"
+          id="settingsBtn"
+          aria-label="Open settings"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="13"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+          >
+            <circle cx="8" cy="8" r="2.5" />
+            <path
+              d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-arabic-wrap">
+        <span class="p-arabic" lang="ar" aria-label="Iqra in Arabic">اقرأ</span>
+      </div>
+      <p class="p-subtitle">
+        ✦ &nbsp; IQRA &nbsp;·&nbsp; READ &nbsp;·&nbsp; اقرأ &nbsp; ✦
+      </p>
+
+      <div class="p-page-box">
+        <div class="p-page-label">Current Page</div>
+        <div class="p-page-title" id="pageTitle" title="">Loading…</div>
+      </div>
+    </header>
+
+    <!-- ── Body ── -->
+    <main class="p-body">
+      <!-- Mode Switcher -->
+      <div class="p-mode-group" role="group" aria-label="Choose summary mode">
+        <button class="p-mode-btn active" data-mode="full" aria-pressed="true">
+          Full Summary
+        </button>
+        <button class="p-mode-btn" data-mode="3bullets" aria-pressed="false">
+          3 Bullets
+        </button>
+        <button class="p-mode-btn" data-mode="quotes" aria-pressed="false">
+          Key Quotes
+        </button>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="p-stats" role="group" aria-label="Page statistics">
+        <div class="p-stat">
+          <span class="p-stat-num" id="statMin">—</span>
+          <span class="p-stat-lbl">min read</span>
+        </div>
+        <div class="p-stat">
+          <span class="p-stat-num" id="statWords">—</span>
+          <span class="p-stat-lbl">words</span>
+        </div>
+        <div class="p-stat">
+          <span class="p-stat-num" id="statInsights">—</span>
+          <span class="p-stat-lbl">insights</span>
+        </div>
+      </div>
+
+      <!-- Summarize Button -->
+      <button
+        class="p-summarize-btn"
+        id="summarizeBtn"
+        aria-label="Summarize this page"
+      >
+        <span class="p-btn-shimmer" aria-hidden="true"></span>
+        <span class="p-btn-text">Summarize This Page</span>
+      </button>
+
+      <!-- Highlight Toggle -->
+      <div class="p-highlight-row">
+        <div class="p-hl-info">
+          <svg
+            class="p-hl-icon"
+            viewBox="0 0 16 16"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M3 12L6 5 10 5 13 12 11 12 10 9.5 6 9.5 5 12Z"
+              fill="#E8C14A"
+              opacity="0.75"
+            />
+            <rect
+              x="5"
+              y="12"
+              width="6"
+              height="2"
+              rx="1"
+              fill="#E8C14A"
+              opacity="0.45"
+            />
+          </svg>
+          <div class="p-hl-text">
+            <span class="p-hl-title">Highlight on Page</span>
+            <span class="p-hl-sub">Mark key sections in browser</span>
+          </div>
+        </div>
+        <button
+          class="p-toggle"
+          id="highlightToggle"
+          role="switch"
+          aria-checked="false"
+          aria-label="Toggle in-page highlighting"
+        >
+          <span class="p-toggle-dot" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div class="p-loading" id="loadingState" hidden aria-live="polite">
+        <div class="p-spinner" aria-label="Loading">
+          <div class="p-spin-ring"></div>
+          <span class="p-spin-star" aria-hidden="true">✦</span>
+        </div>
+        <p class="p-loading-text">
+          Summoning insights<span class="p-dots" aria-hidden="true"
+            ><span>.</span><span>.</span><span>.</span></span
+          >
+        </p>
+      </div>
+
+      <!-- Error Banner -->
+      <div
+        class="p-error"
+        id="errorBanner"
+        hidden
+        role="alert"
+        aria-live="assertive"
+      >
+        <svg
+          viewBox="0 0 16 16"
+          width="14"
+          height="14"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle cx="8" cy="8" r="6.5" stroke="#e06060" stroke-width="1.2" />
+          <path
+            d="M8 4.5v4M8 11v1"
+            stroke="#e06060"
+            stroke-width="1.4"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span class="p-error-msg" id="errorText"></span>
+        <button class="p-error-close" id="errorClose" aria-label="Dismiss">
+          ✕
+        </button>
+      </div>
+
+      <!-- Cache Badge -->
+      <div class="p-cache-badge" id="cacheBadge" hidden>
+        <span aria-label="Loaded from cache">Cached result</span>
+      </div>
+
+      <!-- Results Divider -->
+      <div class="p-divider" id="resultsDivider" hidden aria-hidden="true">
+        <span class="p-div-line"></span>
+        <span class="p-div-star">✦</span>
+        <span class="p-div-line"></span>
+      </div>
+
+      <!-- Summary Results -->
+      <ol
+        class="p-results"
+        id="summaryResults"
+        hidden
+        aria-label="Summary insights"
+        aria-live="polite"
+      ></ol>
+    </main>
+
+    <!-- ── Footer ── -->
+    <footer class="p-footer">
+      <div class="p-read-time">
+        <span class="p-read-label">Read time</span>
+        <span class="p-read-value" id="readTime">—</span>
+      </div>
+      <div class="p-footer-actions">
+        <button
+          class="p-action-btn"
+          id="copyBtn"
+          aria-label="Copy summary to clipboard"
+          disabled
+        >
+          <svg
+            viewBox="0 0 14 14"
+            width="10"
+            height="10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <rect x="5" y="5" width="8" height="8" rx="1.2" />
+            <path d="M9 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v5a1 1 0 001 1h2" />
+          </svg>
+          <span>Copy</span>
+        </button>
+        <button
+          class="p-action-btn"
+          id="clearBtn"
+          aria-label="Clear summary and reset"
+          disabled
+        >
+          <svg
+            viewBox="0 0 14 14"
+            width="10"
+            height="10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.3"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M2 2l10 10M12 2L2 12" />
+          </svg>
+          <span>Clear</span>
+        </button>
+      </div>
+    </footer>
+
+    <!-- ── Copy Toast ── -->
+    <div
+      class="p-toast"
+      id="copyToast"
+      aria-live="polite"
+      aria-atomic="true"
+      hidden
+    >
+      ✦ Copied to clipboard!
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
