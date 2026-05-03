@@ -1,93 +1,132 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iqra — Settings</title>
-  <link rel="stylesheet" href="options.css">
-</head>
-<body>
-  <div class="page">
-
-    <header class="o-header">
-      <div class="o-header-inner">
-        <div class="o-logo">
-          <span class="o-arabic" lang="ar">اقرأ</span>
-          <div class="o-title-group">
-            <h1 class="o-title">Iqra Settings</h1>
-            <p class="o-sub">AI Page Summarizer · v1.0.0</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iqra — Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="o-header">
+        <div class="o-header-inner">
+          <div class="o-logo">
+            <span class="o-arabic" lang="ar">اقرأ</span>
+            <div class="o-title-group">
+              <h1 class="o-title">Iqra Settings</h1>
+              <p class="o-sub">AI Page Summarizer · v1.0.0</p>
+            </div>
           </div>
+          <a href="#" class="o-back" id="backLink" role="button"
+            >← Back to extension</a
+          >
         </div>
-        <a href="#" class="o-back" id="backLink" role="button">← Back to extension</a>
-      </div>
-    </header>
+      </header>
 
-    <main class="o-main">
+      <main class="o-main">
+        <div
+          class="o-toast"
+          id="saveBanner"
+          hidden
+          role="status"
+          aria-live="polite"
+        >
+          ✦ Settings saved successfully
+        </div>
+        <div
+          class="o-toast o-toast--error"
+          id="errorBanner"
+          hidden
+          role="alert"
+          aria-live="assertive"
+        >
+          <span id="errorText"></span>
+        </div>
 
-      <div class="o-toast" id="saveBanner" hidden role="status" aria-live="polite">✦ Settings saved successfully</div>
-      <div class="o-toast o-toast--error" id="errorBanner" hidden role="alert" aria-live="assertive"><span id="errorText"></span></div>
+        <!-- Backend URL -->
+        <section class="o-section">
+          <h2 class="o-section-title">Backend Server</h2>
+          <p class="o-section-desc">
+            Your Iqra backend handles all AI requests securely. The API key
+            lives on the server — never in this extension. Deploy the backend to
+            Vercel and paste your URL here.
+          </p>
+          <div class="o-field">
+            <label class="o-label" for="backendUrl">Backend URL</label>
+            <div class="o-input-wrap">
+              <input
+                type="url"
+                id="backendUrl"
+                class="o-input"
+                placeholder="https://your-project.vercel.app"
+                autocomplete="off"
+                spellcheck="false"
+              />
+            </div>
+            <p class="o-hint" id="urlHint">
+              e.g. https://iqra-backend-two.vercel.app
+            </p>
+          </div>
 
-      <!-- Backend URL -->
-      <section class="o-section">
-        <h2 class="o-section-title">Backend Server</h2>
-        <p class="o-section-desc">
-          Your Iqra backend handles all AI requests securely. The API key lives on the server — never in this extension.
-          Deploy the backend to Vercel and paste your URL here.
-        </p>
-        <div class="o-field">
-          <label class="o-label" for="backendUrl">Backend URL</label>
-          <div class="o-input-wrap">
-            <input
-              type="url"
-              id="backendUrl"
-              class="o-input"
-              placeholder="https://your-project.vercel.app"
-              autocomplete="off"
-              spellcheck="false"
+          <button class="o-test-btn" id="testBtn" type="button">
+            <span class="o-test-text">Test Connection</span>
+            <span
+              class="o-test-spinner"
+              id="testSpinner"
+              hidden
+              aria-hidden="true"
+              >⟳</span
             >
+          </button>
+          <div class="o-test-result" id="testResult" hidden></div>
+        </section>
+
+        <!-- Security notice -->
+        <section class="o-section o-section--info">
+          <h2 class="o-section-title">✦ How Security Works</h2>
+          <ul class="o-info-list">
+            <li>
+              Your AI API key lives in Vercel environment variables — not in
+              this extension
+            </li>
+            <li>The extension sends only page content to your backend</li>
+            <li>Your backend calls the AI and returns only the summary</li>
+            <li>
+              No secrets are ever stored in or transmitted by the extension
+            </li>
+          </ul>
+        </section>
+
+        <!-- Cache -->
+        <section class="o-section">
+          <h2 class="o-section-title">Cache</h2>
+          <p class="o-section-desc">
+            Summaries are cached per URL for 24 hours to avoid duplicate
+            requests.
+          </p>
+          <div class="o-cache-row">
+            <span class="o-cache-size" id="cacheSizeLabel">Calculating…</span>
+            <button class="o-clear-cache-btn" id="clearCacheBtn" type="button">
+              Clear Cache
+            </button>
           </div>
-          <p class="o-hint" id="urlHint">e.g. https://iqra-backend.vercel.app</p>
+        </section>
+
+        <div class="o-actions">
+          <button class="o-save-btn" id="saveBtn" type="button">
+            Save Settings
+          </button>
         </div>
+      </main>
 
-        <button class="o-test-btn" id="testBtn" type="button">
-          <span class="o-test-text">Test Connection</span>
-          <span class="o-test-spinner" id="testSpinner" hidden aria-hidden="true">⟳</span>
-        </button>
-        <div class="o-test-result" id="testResult" hidden></div>
-      </section>
+      <footer class="o-footer">
+        <p>
+          Iqra — AI Page Summarizer &nbsp;·&nbsp; Built with ✦ &nbsp;·&nbsp; Van
+          Gogh Starry Night Edition
+        </p>
+      </footer>
+    </div>
 
-      <!-- Security notice -->
-      <section class="o-section o-section--info">
-        <h2 class="o-section-title">✦ How Security Works</h2>
-        <ul class="o-info-list">
-          <li>Your AI API key lives in Vercel environment variables — not in this extension</li>
-          <li>The extension sends only page content to your backend</li>
-          <li>Your backend calls the AI and returns only the summary</li>
-          <li>No secrets are ever stored in or transmitted by the extension</li>
-        </ul>
-      </section>
-
-      <!-- Cache -->
-      <section class="o-section">
-        <h2 class="o-section-title">Cache</h2>
-        <p class="o-section-desc">Summaries are cached per URL for 24 hours to avoid duplicate requests.</p>
-        <div class="o-cache-row">
-          <span class="o-cache-size" id="cacheSizeLabel">Calculating…</span>
-          <button class="o-clear-cache-btn" id="clearCacheBtn" type="button">Clear Cache</button>
-        </div>
-      </section>
-
-      <div class="o-actions">
-        <button class="o-save-btn" id="saveBtn" type="button">Save Settings</button>
-      </div>
-
-    </main>
-
-    <footer class="o-footer">
-      <p>Iqra — AI Page Summarizer &nbsp;·&nbsp; Built with ✦ &nbsp;·&nbsp; Van Gogh Starry Night Edition</p>
-    </footer>
-  </div>
-
-  <script src="options.js"></script>
-</body>
+    <script src="options.js"></script>
+  </body>
 </html>
