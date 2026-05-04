@@ -1,35 +1,61 @@
-/* ── Design Tokens ─────────────────────────────── */
-:root {
-  --bg: #080e20; /* deep prussian cobalt   */
-  --bg-deep: #050a16; /* footer / header dark   */
-  --bg-surface: #060c1a; /* card surfaces           */
-  --bg-input: #04070f; /* input / page box        */
-  --border: #1a2d5a; /* subtle blue border      */
-  --border-faint: #111d3e; /* very faint border       */
+/* ── Dark Theme (Starry Night) ─────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg: #080e20;
+  --bg-deep: #050a16;
+  --bg-surface: #060c1a;
+  --bg-input: #04070f;
+  --border: #1a2d5a;
+  --border-faint: #111d3e;
 
-  --gold: #e8c14a; /* moonlight gold (Arabic, button, accents) */
+  --gold: #e8c14a;
   --gold-dim: rgba(232, 193, 74, 0.55);
   --gold-faint: rgba(232, 193, 74, 0.22);
   --gold-glow: rgba(232, 193, 74, 0.12);
 
-  --text-primary: #fff8e7; /* warm star-white — body text  */
-  --text-sky: #c5d5f0; /* soft sky blue — page title   */
-  --text-mid: #5a78b8; /* mid sky — secondary text     */
-  --text-muted: #3a5888; /* muted blue — labels          */
-  --text-faint: #2a3e6a; /* very faint — tertiary        */
+  --text-primary: #fff8e7;
+  --text-sky: #c5d5f0;
+  --text-mid: #5a78b8;
+  --text-muted: #3a5888;
+  --text-faint: #2a3e6a;
 
+  --btn-text: #080e20;
   --error: #e06868;
   --error-bg: rgba(224, 104, 104, 0.1);
 
-  --radius-lg: 14px;
-  --radius-md: 10px;
-  --radius-sm: 7px;
-
-  --font-sans: -apple-system, "Segoe UI", system-ui, sans-serif;
-  --font-mono: "Courier New", monospace;
+  --mode-active-text: #080e20;
+  --shimmer-color: rgba(255, 255, 255, 0.22);
 }
 
-/* ── Reset & Base ──────────────────────────────── */
+/* ── Light Theme (Almond Blossom) ──────────────── */
+[data-theme="light"] {
+  --bg: #f7f0e6;
+  --bg-deep: #ede4d6;
+  --bg-surface: #f0e8d8;
+  --bg-input: #e8dec8;
+  --border: #c4a882;
+  --border-faint: #d8cab0;
+
+  --gold: #7a5c2e;
+  --gold-dim: rgba(122, 92, 46, 0.55);
+  --gold-faint: rgba(122, 92, 46, 0.18);
+  --gold-glow: rgba(122, 92, 46, 0.08);
+
+  --text-primary: #2c1810;
+  --text-sky: #3d2b1f;
+  --text-mid: #6b4c35;
+  --text-muted: #8c6848;
+  --text-faint: #a8845e;
+
+  --btn-text: #f7f0e6;
+  --error: #c0392b;
+  --error-bg: rgba(192, 57, 43, 0.08);
+
+  --mode-active-text: #f7f0e6;
+  --shimmer-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Reset ─────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -43,11 +69,14 @@ body {
   width: 340px;
   background: var(--bg);
   color: var(--text-primary);
-  font-family: var(--font-sans);
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
   font-size: 13px;
   line-height: 1.5;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition:
+    background 0.4s ease,
+    color 0.4s ease;
 }
 
 button {
@@ -57,11 +86,18 @@ button {
   background: none;
   color: inherit;
 }
-
 button:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
+}
+
+/* ── Theme visibility helpers ──────────────────── */
+[data-theme="dark"] .bg-light-only {
+  display: none;
+}
+[data-theme="light"] .bg-dark-only {
+  display: none;
 }
 
 /* ── Keyframes ─────────────────────────────────── */
@@ -77,7 +113,7 @@ button:focus-visible {
 @keyframes float {
   0%,
   100% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
   50% {
     transform: translateY(-4px);
@@ -93,8 +129,20 @@ button:focus-visible {
   50% {
     text-shadow:
       0 0 32px rgba(232, 193, 74, 0.75),
-      0 0 80px rgba(232, 193, 74, 0.3),
-      0 0 120px rgba(232, 193, 74, 0.1);
+      0 0 80px rgba(232, 193, 74, 0.3);
+  }
+}
+@keyframes blossomPulse {
+  0%,
+  100% {
+    text-shadow:
+      0 0 18px rgba(122, 92, 46, 0.3),
+      0 0 40px rgba(122, 92, 46, 0.12);
+  }
+  50% {
+    text-shadow:
+      0 0 28px rgba(122, 92, 46, 0.5),
+      0 0 60px rgba(122, 92, 46, 0.2);
   }
 }
 @keyframes shimmer {
@@ -150,6 +198,14 @@ button:focus-visible {
     opacity: 0;
   }
 }
+@keyframes themeFlip {
+  from {
+    transform: rotate(0deg) scale(0.8);
+  }
+  to {
+    transform: rotate(360deg) scale(1);
+  }
+}
 
 /* ── Background Canvas ─────────────────────────── */
 .bg-canvas {
@@ -165,7 +221,6 @@ button:focus-visible {
   left: 0;
   width: 100%;
   height: 260px;
-  opacity: 1;
 }
 .bg-stars {
   position: absolute;
@@ -173,6 +228,13 @@ button:focus-visible {
   left: 0;
   width: 340px;
   height: 600px;
+}
+.bg-blossoms {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 300px;
 }
 .tw {
   animation: twinkle var(--dur, 3s) ease-in-out var(--delay, 0s) infinite;
@@ -192,11 +254,7 @@ button:focus-visible {
   z-index: 2;
   padding: 14px 18px 16px;
   border-bottom: 1px solid var(--border-faint);
-  background: linear-gradient(
-    to bottom,
-    rgba(8, 14, 32, 0.5) 0%,
-    transparent 100%
-  );
+  transition: border-color 0.4s;
 }
 
 .p-top-row {
@@ -215,6 +273,48 @@ button:focus-visible {
   border-radius: 20px;
   text-transform: uppercase;
   user-select: none;
+  transition: all 0.4s;
+}
+
+.p-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Paintbrush theme toggle */
+.p-theme-btn {
+  width: 26px;
+  height: 26px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.4s;
+  position: relative;
+  overflow: hidden;
+}
+.p-theme-btn:hover {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+
+/* Show correct icon per theme */
+[data-theme="dark"] .theme-icon-light {
+  display: none;
+}
+[data-theme="light"] .theme-icon-dark {
+  display: none;
+}
+
+.p-theme-btn.spinning svg {
+  animation: themeFlip 0.4s ease;
 }
 
 .p-settings-btn {
@@ -229,7 +329,8 @@ button:focus-visible {
   justify-content: center;
   transition:
     color 0.2s,
-    border-color 0.2s;
+    border-color 0.2s,
+    background 0.4s;
 }
 .p-settings-btn:hover {
   color: var(--gold);
@@ -246,10 +347,17 @@ button:focus-visible {
   font-size: 52px;
   line-height: 1;
   color: var(--gold);
-  animation: goldPulse 3.5s ease-in-out infinite;
   user-select: none;
   margin-bottom: 4px;
+  transition: color 0.4s;
 }
+[data-theme="dark"] .p-arabic {
+  animation: goldPulse 3.5s ease-in-out infinite;
+}
+[data-theme="light"] .p-arabic {
+  animation: blossomPulse 3.5s ease-in-out infinite;
+}
+
 .p-subtitle {
   font-size: 7.5px;
   letter-spacing: 0.26em;
@@ -258,14 +366,15 @@ button:focus-visible {
   text-align: center;
   margin-bottom: 13px;
   user-select: none;
+  transition: color 0.4s;
 }
 
-/* Page title box */
 .p-page-box {
   background: var(--bg-input);
   border: 1px solid var(--border-faint);
-  border-radius: var(--radius-sm);
+  border-radius: 9px;
   padding: 8px 12px;
+  transition: all 0.4s;
 }
 .p-page-label {
   font-size: 7px;
@@ -281,6 +390,7 @@ button:focus-visible {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.4s;
 }
 
 /* ── Body ──────────────────────────────────────── */
@@ -301,6 +411,7 @@ button:focus-visible {
   border-radius: 11px;
   padding: 3px;
   gap: 3px;
+  transition: all 0.4s;
 }
 .p-mode-btn {
   flex: 1;
@@ -320,7 +431,7 @@ button:focus-visible {
 }
 .p-mode-btn.active {
   background: var(--gold);
-  color: var(--bg-deep);
+  color: var(--mode-active-text);
   font-weight: 700;
 }
 
@@ -333,11 +444,12 @@ button:focus-visible {
 .p-stat {
   background: var(--bg-surface);
   border: 1px solid var(--border-faint);
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   padding: 10px 6px;
   text-align: center;
   position: relative;
   overflow: hidden;
+  transition: all 0.4s;
 }
 .p-stat::after {
   content: "";
@@ -360,6 +472,7 @@ button:focus-visible {
   font-weight: 300;
   color: var(--text-primary);
   line-height: 1;
+  transition: color 0.4s;
 }
 .p-stat-lbl {
   display: block;
@@ -368,16 +481,17 @@ button:focus-visible {
   color: var(--text-faint);
   text-transform: uppercase;
   margin-top: 4px;
+  transition: color 0.4s;
 }
 
-/* ── Main Summarize Button ─────────────────────── */
+/* ── Summarize Button ──────────────────────────── */
 .p-summarize-btn {
   width: 100%;
   position: relative;
   overflow: hidden;
   background: var(--gold);
-  color: var(--bg-deep);
-  border-radius: var(--radius-md);
+  color: var(--btn-text);
+  border-radius: 10px;
   padding: 13px 14px;
   font-size: 11px;
   letter-spacing: 0.13em;
@@ -385,7 +499,9 @@ button:focus-visible {
   font-weight: 700;
   transition:
     filter 0.2s,
-    transform 0.1s;
+    transform 0.1s,
+    background 0.4s,
+    color 0.4s;
 }
 .p-summarize-btn::before {
   content: "✦";
@@ -416,7 +532,6 @@ button:focus-visible {
   cursor: not-allowed;
   filter: none;
 }
-
 .p-btn-shimmer {
   position: absolute;
   top: 0;
@@ -426,7 +541,7 @@ button:focus-visible {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.22),
+    var(--shimmer-color),
     transparent
   );
   animation: shimmer 2.8s ease-in-out infinite;
@@ -440,8 +555,9 @@ button:focus-visible {
   justify-content: space-between;
   background: var(--bg-surface);
   border: 1px solid var(--border-faint);
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   padding: 9px 12px;
+  transition: all 0.4s;
 }
 .p-hl-info {
   display: flex;
@@ -458,6 +574,7 @@ button:focus-visible {
   color: var(--text-sky);
   display: block;
   letter-spacing: 0.04em;
+  transition: color 0.4s;
 }
 .p-hl-sub {
   font-size: 8px;
@@ -465,6 +582,7 @@ button:focus-visible {
   display: block;
   letter-spacing: 0.06em;
   margin-top: 1px;
+  transition: color 0.4s;
 }
 
 .p-toggle {
@@ -501,7 +619,7 @@ button:focus-visible {
   background: var(--gold);
 }
 
-/* ── Loading State ─────────────────────────────── */
+/* ── Loading ───────────────────────────────────── */
 .p-loading {
   display: flex;
   flex-direction: column;
@@ -512,7 +630,6 @@ button:focus-visible {
 .p-loading[hidden] {
   display: none;
 }
-
 .p-spinner {
   position: relative;
   width: 40px;
@@ -534,7 +651,6 @@ button:focus-visible {
   color: var(--gold);
   opacity: 0.7;
 }
-
 .p-loading-text {
   font-size: 11px;
   color: var(--text-muted);
@@ -550,14 +666,14 @@ button:focus-visible {
   animation-delay: 0.4s;
 }
 
-/* ── Error Banner ──────────────────────────────── */
+/* ── Error ─────────────────────────────────────── */
 .p-error {
   display: flex;
   align-items: flex-start;
   gap: 8px;
   background: var(--error-bg);
   border: 1px solid rgba(224, 104, 104, 0.25);
-  border-radius: var(--radius-sm);
+  border-radius: 7px;
   padding: 9px 12px;
   animation: slideIn 0.25s ease;
 }
@@ -613,7 +729,7 @@ button:focus-visible {
   color: var(--gold-dim);
 }
 
-/* ── Summary Results ───────────────────────────── */
+/* ── Results ───────────────────────────────────── */
 .p-results {
   display: flex;
   flex-direction: column;
@@ -628,7 +744,6 @@ button:focus-visible {
 .p-results[hidden] {
   display: none;
 }
-
 .p-result-item {
   display: flex;
   gap: 10px;
@@ -636,10 +751,12 @@ button:focus-visible {
   background: var(--bg-surface);
   border: 1px solid var(--border-faint);
   border-left: 2px solid var(--gold-faint);
-  border-radius: var(--radius-sm);
+  border-radius: 9px;
   padding: 9px 11px;
   animation: slideIn 0.3s ease both;
-  transition: border-left-color 0.2s;
+  transition:
+    border-left-color 0.2s,
+    background 0.4s;
 }
 .p-result-item:hover {
   border-left-color: var(--gold-dim);
@@ -647,18 +764,17 @@ button:focus-visible {
 .p-result-num {
   font-size: 9px;
   color: var(--gold-dim);
-  font-variant-numeric: tabular-nums;
   min-width: 18px;
   text-align: right;
   padding-top: 2px;
   flex-shrink: 0;
-  letter-spacing: 0.04em;
 }
 .p-result-text {
   font-size: 12px;
   color: var(--text-primary);
   line-height: 1.6;
   opacity: 0.9;
+  transition: color 0.4s;
 }
 
 /* ── Footer ────────────────────────────────────── */
@@ -671,6 +787,7 @@ button:focus-visible {
   justify-content: space-between;
   align-items: center;
   background: var(--bg-deep);
+  transition: all 0.4s;
 }
 .p-read-time {
   display: flex;
@@ -687,6 +804,7 @@ button:focus-visible {
   font-size: 15px;
   font-weight: 300;
   color: var(--gold);
+  transition: color 0.4s;
 }
 .p-footer-actions {
   display: flex;
@@ -717,7 +835,7 @@ button:focus-visible {
   cursor: not-allowed;
 }
 
-/* ── Copy Toast ────────────────────────────────── */
+/* ── Toast ─────────────────────────────────────── */
 .p-toast {
   position: fixed;
   bottom: 14px;
@@ -742,7 +860,7 @@ button:focus-visible {
   animation: toastOut 0.3s ease forwards;
 }
 
-/* ── Scrollbar Styling ─────────────────────────── */
+/* ── Scrollbar ─────────────────────────────────── */
 .p-results::-webkit-scrollbar {
   width: 4px;
 }
@@ -754,7 +872,6 @@ button:focus-visible {
   border-radius: 2px;
 }
 
-/* ── Utility ───────────────────────────────────── */
 [hidden] {
   display: none !important;
 }
