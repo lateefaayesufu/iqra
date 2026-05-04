@@ -1,4 +1,4 @@
-# اقرأ Iqra — AI Page Summarizer
+# اقرأ - Iqra — AI Page Summarizer
 
 > _A Chrome Extension that reads the web so you don't have to._
 > Van Gogh Starry Night × Almond Blossom Edition · Manifest V3
