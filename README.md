@@ -1,20 +1,20 @@
 # اقرأ Iqra — AI Page Summarizer
 
 > _A Chrome Extension that reads the web so you don't have to._
-> Van Gogh Starry Night Edition · Manifest V3
+> Van Gogh Starry Night × Almond Blossom Edition · Manifest V3
 
 ---
 
 ## What It Does
 
-Iqra (Arabic: اقرأ — _"Read"_, the first word of the Quran's revelation) is a Chrome Extension that extracts meaningful content from any webpage and uses AI to generate structured summaries instantly.
+Iqra (Arabic: اقرأ — _"Read"_) is a Chrome Extension that extracts meaningful content from any webpage and uses AI to generate structured summaries instantly — with zero API keys stored in the extension.
 
 **One click gives you:**
 
-- Bullet-point key insights
+- Bullet-point key insights (3 summary modes)
 - Estimated reading time + word count
 - Optional in-page highlighting of key phrases
-- Three summary modes: Full Summary, 3 Bullets, Key Quotes
+- Van Gogh dual-theme UI (Starry Night dark / Almond Blossom light)
 
 ---
 
@@ -22,163 +22,159 @@ Iqra (Arabic: اقرأ — _"Read"_, the first word of the Quran's revelation) i
 
 > This extension runs locally and is **not** on the Chrome Web Store.
 
-### Step 1 — Download the Extension
+### Step 1 — Download & Unzip
 
-1. Download the `iqra-summarizer.zip` file
-2. Unzip it to a permanent folder (e.g. `~/Extensions/iqra-summarizer`)
-   - **Important:** Don't delete this folder after installing — Chrome loads from it
+1. Download `iqra-summarizer.zip`
+2. Unzip to a **permanent** folder (e.g. `~/Extensions/iqra-summarizer`)
+   - Do not delete this folder after installing — Chrome loads from it live
 
 ### Step 2 — Load in Chrome
 
-1. Open Chrome and go to `chrome://extensions`
-2. Enable **Developer Mode** (toggle in the top-right corner)
+1. Open Chrome → go to `chrome://extensions`
+2. Enable **Developer Mode** (toggle, top-right corner)
 3. Click **"Load unpacked"**
 4. Select the unzipped `iqra-summarizer` folder
-5. The Iqra icon (✦ Islamic star) will appear in your toolbar
+5. The Iqra star icon appears in your toolbar
 
-> Pin it: Click the puzzle piece icon → pin Iqra for easy access
+> **Pin it:** Click the puzzle piece icon → pin Iqra for easy access
 
-### Step 3 — Configure Your API Key
+### Step 3 — Connect to the Backend
 
-1. Click the ⚙ settings icon inside the popup, **or** go to `chrome://extensions` → Iqra → Extension options
-2. Select your AI provider (Anthropic, OpenAI, or Gemini)
-3. Paste your API key
-4. Click **Test Connection** to verify
-5. Click **Save Settings**
+1. Click the Iqra icon → click the gear button (top right of popup)
+2. In the **Backend URL** field, paste:
+   ```
+   https://iqra-backend-two.vercel.app
+   ```
+3. Click **Test Connection** — should say Connected
+4. Click **Save Settings**
+
+No API key needed anywhere. The backend handles all AI calls securely.
 
 ### Step 4 — Use It
 
-1. Navigate to any article, blog post, documentation page, or news story
+1. Go to any article, blog post, Wikipedia page, or news story
 2. Click the Iqra icon in your toolbar
-3. Choose your summary mode (Full / 3 Bullets / Key Quotes)
-4. Click **"Summarize This Page"**
-5. Toggle **"Highlight on Page"** to mark key phrases in the browser
-
----
-
-## Getting an API Key
-
-| Provider                           | Link                                                                     | Free Tier                    |
-| ---------------------------------- | ------------------------------------------------------------------------ | ---------------------------- |
-| **Anthropic Claude** (recommended) | [console.anthropic.com](https://console.anthropic.com)                   | Pay-as-you-go, ~$0.0001/call |
-| **OpenAI**                         | [platform.openai.com/api-keys](https://platform.openai.com/api-keys)     | $5 free credit               |
-| **Google Gemini**                  | [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) | Free quota available         |
+3. Choose your summary mode (Full Summary / 3 Bullets / Key Quotes)
+4. Click **Summarize This Page**
+5. Toggle **Highlight on Page** to mark key phrases in the browser
+6. Click the paintbrush icon to switch between dark and light themes
 
 ---
 
 ## Architecture
 
+### File Structure
+
 ```
-iqra-summarizer/
-├── manifest.json       # Extension config (Manifest V3)
-├── background.js       # Service worker — AI calls, cache, rate limiting
-├── content.js          # Injected script — content extraction, highlighting
-├── popup.html          # Extension popup UI structure
-├── popup.css           # Van Gogh Starry Night styling + animations
-├── popup.js            # Popup logic — state, messaging, rendering
-├── options.html        # Settings page UI
-├── options.css         # Settings page styling
-├── options.js          # Settings logic — save/load/test API key
-└── icons/
-    ├── icon16.png      # Islamic 8-point star icon
-    ├── icon32.png
-    ├── icon48.png
-    └── icon128.png
+iqra-summarizer/          Chrome Extension (frontend)
+├── manifest.json         MV3 config, minimal permissions
+├── background.js         Service worker — proxy calls, cache, rate limiting
+├── content.js            Injected script — content extraction, highlighting
+├── popup.html            Extension popup UI
+├── popup.css             Van Gogh dual-theme styling + animations
+├── popup.js              Popup logic — state, messaging, rendering
+├── options.html          Settings page — backend URL config
+├── options.css           Settings page styling
+├── options.js            Settings logic — save/load/test backend URL
+└── icons/                Islamic 8-point star icons (16/32/48/128px)
+
+iqra-backend/             Proxy Server (deployed on Vercel)
+├── api/
+│   └── index.js          Express server — validates, calls Gemini, returns summary
+├── package.json
+├── vercel.json
+├── .env.example          Documents which env vars to set
+└── .gitignore
 ```
 
 ### Data Flow
 
 ```
-User clicks "Summarize"
+User clicks "Summarize This Page"
         │
         ▼
-   popup.js
-   ├── Injects content.js into active tab (if not already present)
-   ├── Sends { action: 'extractContent' } to content.js
-   │
-   ▼
-content.js (runs in page context)
-   ├── Removes noise elements (nav, footer, ads, sidebars)
-   ├── Finds main article content via selector priority list
-   ├── Falls back to heuristic: densest text block
-   ├── Returns { text, wordCount, title, url }
-   │
-   ▼
 popup.js
-   └── Sends { action: 'summarize', content, url, mode } to background.js
-           │
-           ▼
-      background.js (service worker — isolated, secure)
-           ├── Checks chrome.storage.local cache (24h TTL)
-           ├── Checks rate limit (10 req/min)
-           ├── Reads API key from chrome.storage.sync
-           ├── Calls AI API (Anthropic / OpenAI / Gemini)
-           ├── Parses + validates JSON response
-           ├── Sanitizes all strings (XSS prevention)
-           ├── Saves result to cache
-           └── Returns { insights, readingTime, wordCount, keyPhrases }
-                   │
-                   ▼
-              popup.js
-              └── Renders summary → optionally sends keyPhrases to content.js
-                          │
-                          ▼
-                     content.js
-                     └── Highlights matching phrases in live DOM using Range API
+├── Injects content.js into active tab (on demand, not persistent)
+└── Sends extractContent message to content.js
+        │
+        ▼
+content.js (runs in page context)
+├── Strips noise: nav, footer, ads, sidebars (20+ selectors)
+├── Finds main content via 18-selector priority list
+├── Falls back to heuristic: densest text block
+└── Returns { text, wordCount, title, url }
+        │
+        ▼
+popup.js → background.js (service worker)
+├── Checks chrome.storage.local cache (24h TTL per URL+mode)
+├── Checks client-side rate limit (10 req/min)
+└── POSTs { content, mode, wordCount, readingTime } over HTTPS
+        │
+        ▼
+Vercel Proxy Server — iqra-backend
+├── Validates and sanitizes all input
+├── Server-side rate limiting (20 req/min per IP)
+├── Reads GEMINI_API_KEY from encrypted environment variables
+├── Calls Gemini 2.5 Flash REST API
+├── Parses and validates JSON response
+├── Sanitizes all strings before returning
+└── Returns { insights, readingTime, wordCount, keyPhrases }
+        │
+        ▼
+background.js
+├── Caches result to chrome.storage.local
+└── Returns summary to popup.js
+        │
+        ▼
+popup.js — renders numbered insight cards
+        │
+        ▼ (if Highlight toggle ON)
+content.js
+└── Highlights keyPhrases in live DOM via Range API
 ```
 
 ---
 
 ## AI Integration
 
-### Provider Support
+### Model
 
-Iqra supports three AI providers, selected from settings:
+**Google Gemini 2.5 Flash** (`gemini-2.5-flash`) — Google's latest fast model, called via REST API from the proxy backend. No SDK required.
 
-| Provider      | Model Used                  | Notes                            |
-| ------------- | --------------------------- | -------------------------------- |
-| Anthropic     | `claude-haiku-4-5-20251001` | Fast, cheap, excellent summaries |
-| OpenAI        | `gpt-4o-mini`               | Reliable, widely available       |
-| Google Gemini | `gemini-1.5-flash`          | Free quota, good quality         |
+### Why a Proxy Server?
+
+The AI API key lives exclusively in Vercel's encrypted environment variables. The extension never sees, stores, or transmits any API key. This means:
+
+- No setup required for anyone testing — just paste the backend URL
+- The key cannot be extracted from the extension by anyone
+- All AI traffic flows through a controlled, rate-limited, validated server
 
 ### Prompt Strategy
 
-The prompt instructs the AI to return **strict JSON only** — no markdown, no preamble. This makes parsing deterministic and crash-resistant.
-
-The AI is given:
-
-- Truncated page content (max 10,000 chars to control cost)
-- Exact word count and reading time (pre-calculated)
-- Mode-specific instruction (full / 3 bullets / key quotes)
-- Required JSON schema with field descriptions
-
-The response parser strips any accidental markdown fences, extracts the first `{…}` block, JSON-parses it, validates required fields, and sanitizes all strings before rendering.
+The prompt uses `responseMimeType: "application/json"` and `thinkingBudget: 0` to force clean JSON output and disable reasoning mode — making responses deterministic and instantly parseable.
 
 ### Summary Modes
 
-| Mode         | Instruction                             | Output        |
-| ------------ | --------------------------------------- | ------------- |
-| Full Summary | 4–6 comprehensive key insights          | Numbered list |
-| 3 Bullets    | Exactly 3 high-impact takeaways         | Numbered list |
-| Key Quotes   | 3 near-verbatim sentences from the text | Numbered list |
+| Mode         | Output                                  |
+| ------------ | --------------------------------------- |
+| Full Summary | 4-6 comprehensive key insights          |
+| 3 Bullets    | Exactly 3 high-impact takeaways         |
+| Key Quotes   | 3 near-verbatim sentences from the text |
 
 ---
 
 ## Security Decisions
 
-### API Key Storage
+### No API Key in Extension — Ever
 
-- Stored in `chrome.storage.sync` — Chrome's **encrypted** built-in key-value store
-- **Never** stored in `localStorage`, cookies, or any web-accessible location
-- **Never** passed through content scripts or injected into page context
-- **Never** hardcoded anywhere in the extension
+The API key lives only in Vercel environment variables. The extension stores only a backend URL. Even if someone fully reverse-engineered the extension, there is nothing sensitive to find.
 
-### API Calls
+### Proxy Server as Security Boundary
 
-- All AI API calls are made exclusively from `background.js` (the service worker)
-- The service worker runs in a **sandboxed, isolated context** — completely separate from any web page
-- Content scripts (running in page context) never touch the API key or make any network requests
-- Popup scripts communicate with background via `chrome.runtime.sendMessage` — Chrome's validated internal message bus
+- CORS restricted to `chrome-extension://` origins only
+- All inputs validated server-side before reaching the AI
+- Server-side rate limiting (20 req/min per IP) prevents abuse
+- Key never logged, never returned to client
 
 ### Content Security Policy
 
@@ -188,19 +184,13 @@ The response parser strips any accidental markdown fences, extracts the first `{
 }
 ```
 
-Blocks all inline scripts and external script sources — no eval, no CDN scripts.
+Blocks all inline scripts, eval, and external CDN scripts.
 
 ### XSS Prevention
 
-- All strings returned from the AI are sanitized with `.replace(/</g, '&lt;').replace(/>/g, '&gt;')` before storage
-- Summary text is rendered with `element.textContent = …` — **never** `innerHTML`
-- Highlight phrases are validated: no HTML, no script characters, length-capped
-
-### Message Validation
-
-- Background service worker only responds to messages from extension pages (not from content scripts or web pages)
-- Message actions are explicitly whitelisted (`summarize`, `clearCache`, `getCacheSize`)
-- All inputs are validated and type-checked before processing
+- AI responses sanitized before storage and before render
+- Summary rendered via `element.textContent` — never `innerHTML`
+- Highlight phrases validated: no HTML, length-capped, char-whitelisted
 
 ### Minimal Permissions
 
@@ -208,61 +198,74 @@ Blocks all inline scripts and external script sources — no eval, no CDN script
 "permissions": ["activeTab", "scripting", "storage", "tabs"]
 ```
 
-- `activeTab` — read only the current tab (not all tabs)
-- `scripting` — inject content.js on demand (not persistently)
-- `storage` — cache summaries + save settings
-- `tabs` — read the current tab's URL and title
-- **No** `<all_urls>` host permission — content script is injected on-demand only
+No `<all_urls>`. Content script injected on-demand only.
+
+---
+
+## Features Checklist
+
+| Feature                              | Status |
+| ------------------------------------ | ------ |
+| Manifest V3                          | ✅     |
+| Background service worker            | ✅     |
+| Content script (on-demand)           | ✅     |
+| Secure proxy backend on Vercel       | ✅     |
+| Gemini 2.5 Flash                     | ✅     |
+| Full / 3 Bullets / Key Quotes modes  | ✅     |
+| In-page highlighting                 | ✅     |
+| 24h smart caching per URL+mode       | ✅     |
+| Rate limiting (client + server)      | ✅     |
+| Reading time + word count            | ✅     |
+| Copy summary to clipboard            | ✅     |
+| Dark mode — Van Gogh Starry Night    | ✅     |
+| Light mode — Van Gogh Almond Blossom | ✅     |
+| Paintbrush theme toggle (persisted)  | ✅     |
+| Animated twinkling stars             | ✅     |
+| Islamic geometric border             | ✅     |
+| Graceful error handling              | ✅     |
+| Keyboard accessible + focus states   | ✅     |
+| XSS prevention                       | ✅     |
+| Zero exposed secrets                 | ✅     |
 
 ---
 
 ## Trade-offs
 
-### Readability vs. Completeness
+### Proxy vs. Direct API Calls
 
-Content extraction uses heuristic HTML selectors rather than a full Readability parser (like Mozilla's). This keeps the bundle to zero dependencies but may miss content on unusual page layouts. For 95%+ of standard article pages it works excellently.
+A backend adds ~50-100ms of network latency vs. calling the AI directly. Worth it: zero key exposure, centralized rate limiting, zero setup for testers.
+
+### Heuristic Extraction vs. Readability Parser
+
+Prioritized CSS selectors + density heuristics instead of Mozilla Readability. Zero dependencies, fully inspectable. Works on 95%+ of article pages. May miss unusual layouts.
 
 ### Truncation at 10,000 chars
 
-Very long pages are truncated before sending to the AI to control API cost and latency. For most articles this captures the full content. For very long documents (books, long-form reports), the summary reflects the first ~2,000 words.
+Long pages truncated to control cost and latency. Covers most articles fully. Very long documents summarize the first ~2,000 words.
 
-### Rate limiting is in-memory
+### No Build Step
 
-The 10 req/min rate limiter resets when the service worker goes idle (Chrome can terminate service workers). This is a best-effort guard, not an absolute one. For a production extension a persistent counter in `chrome.storage.local` would be more reliable.
-
-### chrome.storage.sync vs. local for API keys
-
-Sync storage means the key roams across devices signed into the same Google account. This is convenient but means the key is synced to Google's servers (encrypted). Users who prefer pure local storage can switch to `chrome.storage.local` in `options.js` line 43.
-
-### No bundler / build step
-
-The extension ships as vanilla HTML/CSS/JS — no Webpack, Vite, or TypeScript. This makes it instantly inspectable, hackable, and installable with zero build tooling. Trade-off: no tree-shaking or type safety.
+Vanilla HTML/CSS/JS — zero tooling to install or run. Instantly inspectable. Trade-off: no type safety or tree-shaking.
 
 ---
 
-## Development
+## Backend Deployment
 
-To modify and test locally:
+The backend is already live at `https://iqra-backend-two.vercel.app`. To deploy your own:
 
-1. Edit any file in the extension folder
-2. Go to `chrome://extensions`
-3. Click the **↻ refresh** icon on the Iqra card
-4. The popup will reflect your changes immediately
-
-To watch console logs from the background service worker:
-
-1. Go to `chrome://extensions`
-2. Click **"Service Worker"** link under Iqra
-3. DevTools opens for the background context
+1. Clone the `iqra-backend` repo
+2. Deploy to [vercel.com](https://vercel.com) — import repo, one click
+3. Add environment variable: `GEMINI_API_KEY` from [aistudio.google.com](https://aistudio.google.com)
+4. Update Backend URL in extension settings to your new Vercel URL
 
 ---
 
 ## Credits
 
-- Design aesthetic: Vincent van Gogh's _The Starry Night_ (1889)
-- Arabic calligraphy: اقرأ
+- Design aesthetic: Vincent van Gogh — _The Starry Night_ (1889) + _Almond Blossom_ (1890)
+- Name: اقرأ (_Iqra_)
 - Islamic geometric patterns: traditional 8-point star tessellation
-- Built with: Chrome Extensions Manifest V3, vanilla JS
+- Stack: Chrome Extensions Manifest V3 · Node.js · Express · Gemini 2.5 Flash · Vanilla JS
 
 ---
 
