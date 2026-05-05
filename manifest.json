@@ -4,12 +4,9 @@
   "version": "1.0.0",
   "description": "Instantly summarize any webpage with AI. Three modes: Full Summary, 3 Bullets, Key Quotes. Van Gogh Starry Night aesthetic.",
 
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "storage",
-    "tabs"
-  ],
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+
+  "host_permissions": ["https://iqra-backend-two.vercel.app/*"],
 
   "background": {
     "service_worker": "background.js"
@@ -19,17 +16,17 @@
     "default_popup": "popup.html",
     "default_title": "Iqra — Summarize This Page",
     "default_icon": {
-      "16":  "icons/icon16.png",
-      "32":  "icons/icon32.png",
-      "48":  "icons/icon48.png",
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     }
   },
 
   "icons": {
-    "16":  "icons/icon16.png",
-    "32":  "icons/icon32.png",
-    "48":  "icons/icon48.png",
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
 
