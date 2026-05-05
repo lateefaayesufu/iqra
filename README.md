@@ -258,6 +258,16 @@ The backend is already live at `https://iqra-backend-two.vercel.app`. To deploy 
 3. Add environment variable: `GEMINI_API_KEY` from [aistudio.google.com](https://aistudio.google.com)
 4. Update Backend URL in extension settings to your new Vercel URL
 
+## Backend Source Code
+
+The backend is already deployed and ready to use — no setup needed.
+
+**Live URL:** `https://iqra-backend-two.vercel.app`
+
+**Source code:** (https://github.com/lateefaayesufu/iqra-backend)
+
+To connect: open the extension → click ⚙ → paste the URL → click Test Connection.
+
 ---
 
 ## Credits
