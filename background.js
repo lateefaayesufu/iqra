@@ -2,7 +2,7 @@
 function getBackendUrl() {
   return new Promise((resolve) => {
     chrome.storage.sync.get(["backendUrl"], (result) => {
-      resolve((result.backendUrl || "").trim().replace(/\/$/, ""));
+      resolve((result.backendUrl || "https://iqra-backend-two.vercel.app").trim().replace(/\/$/, ""));
     });
   });
 }
