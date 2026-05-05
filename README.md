@@ -1,4 +1,4 @@
-# اقرأ Iqra — AI Page Summarizer
+# اقرأ - Iqra — AI Page Summarizer
 
 > _A Chrome Extension that reads the web so you don't have to._
 > Van Gogh Starry Night × Almond Blossom Edition · Manifest V3
@@ -257,6 +257,16 @@ The backend is already live at `https://iqra-backend-two.vercel.app`. To deploy 
 2. Deploy to [vercel.com](https://vercel.com) — import repo, one click
 3. Add environment variable: `GEMINI_API_KEY` from [aistudio.google.com](https://aistudio.google.com)
 4. Update Backend URL in extension settings to your new Vercel URL
+
+## Backend Source Code
+
+The backend is already deployed and ready to use — no setup needed.
+
+**Live URL:** `https://iqra-backend-two.vercel.app`
+
+**Source code:** (https://github.com/lateefaayesufu/iqra-backend)
+
+To connect: open the extension → click ⚙ → paste the URL → click Test Connection.
 
 ---
 
